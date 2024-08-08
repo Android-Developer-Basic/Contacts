@@ -34,7 +34,9 @@ internal class LoginState(
             loginFormData = loginFormData.copy(password = gesture.value)
         }
         UiGesture.Action -> TODO()
-        UiGesture.Back -> TODO()
+        UiGesture.Back -> {
+            setMachineState(factory.terminated())
+        }
         else -> super.doProcess(gesture)
     }
 

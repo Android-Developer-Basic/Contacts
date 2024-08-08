@@ -4,6 +4,8 @@ import ru.otus.contacts.data.LoginFormData
 
 interface ContactsFactory {
     fun login(loginFormData: LoginFormData = LoginFormData()): ContactsState
+
+    fun terminated(): ContactsState
 }
 
 class ContactsFactoryImpl : ContactsFactory {
@@ -15,4 +17,6 @@ class ContactsFactoryImpl : ContactsFactory {
         context,
         loginFormData
     )
+
+    override fun terminated(): ContactsState = Terminated()
 }
