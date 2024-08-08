@@ -103,6 +103,25 @@ internal class LoginStateTest : BaseStateTest() {
         }
     }
 
+    @Test
+    fun terminatesOnBack() {
+        every { factory.terminated() } returns nextState
+
+        state.start(stateMachine)
+        state.process(UiGesture.Back)
+
+        verify {
+            stateMachine.setUiState(UiState.LoginForm(
+                U_NAME,
+                U_PASS,
+                true
+            ))
+
+            factory.terminated()
+            stateMachine.setMachineState(nextState)
+        }
+    }
+
     companion object {
         const val U_NAME = "name"
         const val U_PASS = "pass"
