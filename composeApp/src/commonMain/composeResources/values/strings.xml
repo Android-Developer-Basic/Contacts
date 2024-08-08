@@ -1,0 +1,10 @@
+<resources>
+    <string name="loading">Loading...</string>
+    <string name="error">Error!</string>
+    <string name="dismiss">Dismiss</string>
+
+    <string name="login">Login</string>
+    <string name="input_login">Login</string>
+    <string name="input_password">Password</string>
+
+</resources>
