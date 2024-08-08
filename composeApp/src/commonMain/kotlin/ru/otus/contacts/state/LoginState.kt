@@ -38,10 +38,11 @@ internal class LoginState(
         else -> super.doProcess(gesture)
     }
 
-    private fun render() {
+    private fun render() = with(loginFormData) {
         setUiState(UiState.LoginForm(
-            userName = loginFormData.userName,
-            password = loginFormData.password,
+            userName = userName,
+            password = password,
+            loginButtonEnabled = userName.isNotBlank() && password.isNotBlank()
         ))
     }
 }

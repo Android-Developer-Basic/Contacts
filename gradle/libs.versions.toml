@@ -22,6 +22,8 @@ logback = "1.5.18"
 kotlinx-serialization = "1.9.0"
 faker = "1.0.2"
 statemachine = "3.2.1"
+ksp = "2.2.0-2.0.2"
+mockmp = "2.0.2"
 
 [libraries]
 napier = { module = "io.github.aakira:napier", version = "2.7.1" }
@@ -65,3 +67,5 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+google_ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+test-mockmp-plugin = { id = "org.kodein.mock.mockmp", version.ref = "mockmp" }
