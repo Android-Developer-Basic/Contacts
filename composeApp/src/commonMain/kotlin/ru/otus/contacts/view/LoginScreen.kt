@@ -55,7 +55,8 @@ fun LoginScreen(state: UiState.LoginForm, onGesture: (UiGesture) -> Unit) {
                 )
                 Button(
                     modifier = Modifier.padding(16.dp),
-                    onClick = { onGesture(UiGesture.Action) }
+                    onClick = { onGesture(UiGesture.Action) },
+                    enabled = state.loginButtonEnabled
                 ) {
                     Text(stringResource(Res.string.login))
                 }

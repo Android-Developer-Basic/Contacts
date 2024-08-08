@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun AppAndroidPreview() {
     App(
-        state = UiState.LoginForm("user", "password"),
+        state = UiState.LoginForm("user", "password", true),
         onComplete = {},
         onGesture = {}
     )
