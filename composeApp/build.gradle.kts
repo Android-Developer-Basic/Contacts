@@ -35,6 +35,7 @@ kotlin {
 
         commonMain.dependencies {
             implementation(projects.shared)
+            implementation(libs.napier)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
