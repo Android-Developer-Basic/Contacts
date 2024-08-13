@@ -48,7 +48,7 @@ fun LoginScreen(state: UiState.LoginForm, onGesture: (UiGesture) -> Unit) {
                 TextField(
                     modifier = Modifier.padding(16.dp),
                     value = state.password,
-                    onValueChange = { onGesture(UiGesture.Login.UserName(it)) },
+                    onValueChange = { onGesture(UiGesture.Login.Password(it)) },
                     label = { Text(stringResource(Res.string.input_password)) },
                     visualTransformation = PasswordVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),

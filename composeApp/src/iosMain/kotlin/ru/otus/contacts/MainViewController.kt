@@ -1,12 +1,16 @@
 package ru.otus.contacts
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.ComposeUIViewController
-import ru.otus.contacts.data.UiState
+
+val viewModel = Model()
 
 fun MainViewController() = ComposeUIViewController {
+    val viewState by viewModel.uiState.collectAsState()
     App(
-        state = UiState.LoginForm("user", "password"),
+        state = viewState,
         onComplete = {},
-        onGesture = {}
+        onGesture = { viewModel.onGesture(it) }
     )
 }
