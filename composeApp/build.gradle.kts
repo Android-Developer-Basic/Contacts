@@ -44,10 +44,14 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodel)
             implementation(libs.androidx.lifecycle.runtime.compose)
+            implementation(libs.kotlin.coroutines.core)
+            implementation(libs.commonstatemachine.machine)
+            implementation(libs.commonstatemachine.coroutines)
         }
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.kotlin.coroutines.android)
         }
 
         desktopMain.dependencies {
