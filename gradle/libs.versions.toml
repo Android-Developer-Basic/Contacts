@@ -13,13 +13,14 @@ compose-material3 = "1.6.11"
 androidx-test-junit = "1.2.1"
 compose-plugin = "1.6.11"
 junit = "4.13.2"
-kotlin = "2.0.0"
+kotlin = "2.0.10"
 kotlinx-coroutines = "1.8.1"
 kotlinx-serialization = "1.7.1"
 ktor = "2.3.12"
 logback = "1.5.6"
 faker = "1.0.2"
 statemachine = "3.2.1"
+sqlDelight = "2.0.2"
 
 [libraries]
 napier = { module = "io.github.aakira:napier", version = "2.7.1" }
@@ -56,6 +57,11 @@ ktor-serialization-contentJson = { module = "io.ktor:ktor-serialization-kotlinx-
 faker = { module = "com.github.javafaker:javafaker", version.ref = "faker" }
 commonstatemachine-machine = { module = "com.motorro.commonstatemachine:commonstatemachine", version.ref = "statemachine"}
 commonstatemachine-coroutines = { module = "com.motorro.commonstatemachine:coroutines", version.ref = "statemachine"}
+sql-nativeDriver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
+sql-sqliteDriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqlDelight" }
+sql-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
+sql-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelight" }
+sql-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -66,6 +72,6 @@ kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-google_ksp = { id = "com.google.devtools.ksp", version = "2.0.0-1.0.21" }
+google_ksp = { id = "com.google.devtools.ksp", version = "2.0.10-1.0.24" }
 test-mockmp-plugin = { id = "org.kodein.mock.mockmp", version = "1.17.0" }
-kotlinxSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }

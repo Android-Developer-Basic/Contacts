@@ -9,5 +9,6 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform) apply false
     alias(libs.plugins.kotlinSerialization) apply false
     alias(libs.plugins.google.ksp).apply(false)
+    alias(libs.plugins.sqlDelight).apply(false)
     alias(libs.plugins.test.mockmp.plugin).apply(false)
 }

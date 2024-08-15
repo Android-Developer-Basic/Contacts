@@ -9,6 +9,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.google.ksp)
+    alias(libs.plugins.sqlDelight)
     alias(libs.plugins.test.mockmp.plugin)
 }
 
@@ -21,7 +22,15 @@ kotlin {
     }
     
     jvm("desktop")
-    
+
+    targets.configureEach {
+        compilations.configureEach {
+            compileTaskProvider.configure {
+                compilerOptions.freeCompilerArgs.add("-Xexpect-actual-classes")
+            }
+        }
+    }
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -56,6 +65,8 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.contentJson)
+            implementation(libs.sql.runtime)
+            implementation(libs.sql.coroutines)
         }
 
         commonTest.dependencies {
@@ -68,16 +79,19 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlin.coroutines.android)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sql.androidDriver)
         }
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
             implementation(libs.ktor.client.okhttp)
+            implementation(libs.sql.sqliteDriver)
         }
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sql.nativeDriver)
         }
     }
 }
@@ -127,6 +141,15 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "ru.otus.contacts"
             packageVersion = "1.0.0"
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("ContactsDao") {
+            packageName.set("ru.otus.contacts.database")
+            generateAsync.set(true)
         }
     }
 }
