@@ -7,6 +7,7 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.test.mockmp.plugin)
 }
@@ -49,6 +50,12 @@ kotlin {
             implementation(libs.kotlin.coroutines.core)
             implementation(libs.commonstatemachine.machine)
             implementation(libs.commonstatemachine.coroutines)
+            implementation(libs.kotlinx.serialization.core)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.contentJson)
         }
 
         commonTest.dependencies {
@@ -60,11 +67,17 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.kotlin.coroutines.android)
+            implementation(libs.ktor.client.okhttp)
         }
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
+            implementation(libs.ktor.client.okhttp)
+        }
+
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
         }
     }
 }

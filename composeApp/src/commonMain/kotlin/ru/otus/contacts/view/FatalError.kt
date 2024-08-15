@@ -37,7 +37,7 @@ fun FatalError(
         verticalArrangement = Arrangement.spacedBy(30.dp, Alignment.CenterVertically)
     ) {
         Icon(modifier = Modifier.size(128.dp), tint = MaterialTheme.colorScheme.error, imageVector = Icons.Filled.Warning, contentDescription = "Warning")
-        Text(text = errorMessage, style = MaterialTheme.typography.bodyLarge)
+        Text(modifier = Modifier.padding(horizontal = 16.dp), text = errorMessage, style = MaterialTheme.typography.bodyLarge)
         Button(onClick = onDismiss) {
             Text(text = stringResource(Res.string.dismiss))
         }

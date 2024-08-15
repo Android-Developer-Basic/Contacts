@@ -38,5 +38,6 @@ enum class ErrorCode(val defaultMessage: String) {
     BAD_REQUEST("BAD REQUEST"),
     CONFLICT("CONFLICT"),
     UNAUTHORIZED("UNAUTHORIZED"),
-    FORBIDDEN("FORBIDDEN")
+    FORBIDDEN("FORBIDDEN"),
+    UNKNOWN("UNKNOWN ERROR")
 }

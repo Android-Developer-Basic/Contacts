@@ -104,6 +104,68 @@ internal class LoginStateTest : BaseStateTest() {
     }
 
     @Test
+    fun proceedsToLoginIfFilled() {
+        every { factory.loggingIn(isNotNull()) } returns nextState
+
+        state.start(stateMachine)
+        state.process(UiGesture.Action)
+
+        verify {
+            stateMachine.setUiState(UiState.LoginForm(
+                U_NAME,
+                U_PASS,
+                true
+            ))
+            factory.loggingIn(LoginFormData(U_NAME, U_PASS))
+            stateMachine.setMachineState(nextState)
+        }
+    }
+
+    @Test
+    fun doesNotProceedToLoginWithEmptyName() {
+        every { factory.loggingIn(isNotNull()) } returns nextState
+
+        state.start(stateMachine)
+        state.process(UiGesture.Login.UserName(""))
+        state.process(UiGesture.Action)
+
+        verify {
+            stateMachine.setUiState(UiState.LoginForm(
+                U_NAME,
+                U_PASS,
+                true
+            ))
+            stateMachine.setUiState(UiState.LoginForm(
+                "",
+                U_PASS,
+                false
+            ))
+        }
+    }
+
+    @Test
+    fun doesNotProceedToLoginWithEmptyPassword() {
+        every { factory.loggingIn(isNotNull()) } returns nextState
+
+        state.start(stateMachine)
+        state.process(UiGesture.Login.Password(""))
+        state.process(UiGesture.Action)
+
+        verify {
+            stateMachine.setUiState(UiState.LoginForm(
+                U_NAME,
+                U_PASS,
+                true
+            ))
+            stateMachine.setUiState(UiState.LoginForm(
+                U_NAME,
+                "",
+                false
+            ))
+        }
+    }
+
+    @Test
     fun terminatesOnBack() {
         every { factory.terminated() } returns nextState
 

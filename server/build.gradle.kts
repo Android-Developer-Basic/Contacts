@@ -20,7 +20,7 @@ dependencies {
     implementation(libs.ktor.server.netty)
     implementation(libs.ktor.server.status)
     implementation(libs.ktor.server.contentType)
-    implementation(libs.ktor.server.contentJson)
+    implementation(libs.ktor.serialization.contentJson)
     implementation(libs.ktor.server.auth)
     implementation(libs.faker)
     testImplementation(libs.ktor.server.tests)

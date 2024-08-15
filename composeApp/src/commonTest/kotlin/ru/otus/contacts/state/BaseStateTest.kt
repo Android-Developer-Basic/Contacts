@@ -6,9 +6,11 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.jetbrains.compose.resources.StringResource
 import org.kodein.mock.Mock
 import org.kodein.mock.UsesMocks
 import org.kodein.mock.tests.TestsWithMocks
+import ru.otus.contacts.ResourceWrapper
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
 import kotlin.test.AfterTest
@@ -39,6 +41,11 @@ internal abstract class BaseStateTest : TestsWithMocks() {
 
         context = object : ContactsContext {
             override val factory: ContactsFactory get() = this@BaseStateTest.factory
+            override val resourceWrapper: ResourceWrapper = object : ResourceWrapper {
+                override suspend fun getString(resource: StringResource, vararg args: Any): String {
+                    return STRING_RESOURCE
+                }
+            }
         }
         nextState = object : ContactsState() {
             override fun doStart() = Unit
@@ -57,5 +64,9 @@ internal abstract class BaseStateTest : TestsWithMocks() {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    companion object {
+        const val STRING_RESOURCE = "some string"
     }
 }
