@@ -1,0 +1,40 @@
+CREATE TABLE Users (
+    userName TEXT NOT NULL PRIMARY KEY
+);
+
+CREATE INDEX userName ON Users(userName);
+
+CREATE TABLE Contacts (
+    userName TEXT NOT NULL,
+    contactId TEXT NOT NULL,
+    name TEXT NOT NULL,
+    email TEXT,
+    phone TEXT,
+    userPic TEXT,
+    PRIMARY KEY (userName, contactId) ON CONFLICT REPLACE,
+    FOREIGN KEY(userName) REFERENCES Users(userName) ON UPDATE CASCADE ON DELETE CASCADE
+);
+
+CREATE INDEX contactUserName ON Contacts(userName);
+CREATE INDEX contactName ON Contacts(userName, name);
+
+getUser:
+SELECT * FROM Users WHERE userName = ?;
+
+createUser:
+INSERT INTO Users (userName) VALUES ?;
+
+deleteUser:
+DELETE FROM Users WHERE userName = ?;
+
+upsertContact:
+INSERT INTO Contacts VALUES (?, ?, ?, ?, ?, ?);
+
+listAllContacts:
+SELECT * FROM Contacts WHERE userName = ?;
+
+selectContact:
+SELECT * FROM Contacts WHERE userName = ? AND contactId = ?;
+
+findContacts:
+SELECT * FROM Contacts WHERE userName = :userName AND name LIKE (:name || '%');

@@ -24,6 +24,7 @@ faker = "1.0.2"
 statemachine = "3.2.1"
 ksp = "2.2.0-2.0.2"
 mockmp = "2.0.2"
+sqlDelight = "2.1.0"
 
 [libraries]
 napier = { module = "io.github.aakira:napier", version = "2.7.1" }
@@ -61,6 +62,11 @@ ktor-serialization-contentJson = { module = "io.ktor:ktor-serialization-kotlinx-
 faker = { module = "com.github.javafaker:javafaker", version.ref = "faker" }
 commonstatemachine-machine = { module = "com.motorro.commonstatemachine:commonstatemachine", version.ref = "statemachine"}
 commonstatemachine-coroutines = { module = "com.motorro.commonstatemachine:coroutines", version.ref = "statemachine"}
+sql-nativeDriver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqlDelight" }
+sql-sqliteDriver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqlDelight" }
+sql-androidDriver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqlDelight" }
+sql-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqlDelight" }
+sql-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqlDelight" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -73,3 +79,4 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 google_ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 test-mockmp-plugin = { id = "org.kodein.mock.mockmp", version.ref = "mockmp" }
+sqlDelight = { id = "app.cash.sqldelight", version.ref = "sqlDelight" }
