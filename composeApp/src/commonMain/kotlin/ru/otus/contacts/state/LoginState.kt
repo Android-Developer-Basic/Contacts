@@ -33,11 +33,21 @@ internal class LoginState(
         is UiGesture.Login.Password -> {
             loginFormData = loginFormData.copy(password = gesture.value)
         }
-        UiGesture.Action -> TODO()
+        UiGesture.Action -> proceed()
         UiGesture.Back -> {
             setMachineState(factory.terminated())
         }
         else -> super.doProcess(gesture)
+    }
+
+    private fun proceed() {
+        with(loginFormData) {
+            if (userName.isBlank() || password.isBlank()) {
+                return
+            }
+        }
+        Napier.i { "Starting login for user ${loginFormData.userName}" }
+        setMachineState(factory.loggingIn(loginFormData))
     }
 
     private fun render() = with(loginFormData) {

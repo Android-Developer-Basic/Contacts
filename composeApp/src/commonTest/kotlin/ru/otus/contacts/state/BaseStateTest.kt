@@ -6,18 +6,22 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import org.jetbrains.compose.resources.StringResource
 import org.kodein.mock.Mock
 import org.kodein.mock.UsesMocks
 import org.kodein.mock.generated.injectMocks
 import org.kodein.mock.tests.TestsWithMocks
+import ru.otus.contacts.ResourceWrapper
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
+import ru.otus.contacts.network.ContactsApi
 import kotlin.test.AfterTest
 
 @ExperimentalCoroutinesApi
 @UsesMocks(
     CommonStateMachine::class,
-    ContactsFactory::class
+    ContactsFactory::class,
+    ContactsApi::class
 )
 internal abstract class BaseStateTest : TestsWithMocks() {
     override fun setUpMocks() {
@@ -32,6 +36,9 @@ internal abstract class BaseStateTest : TestsWithMocks() {
     @Mock
     lateinit var factory: ContactsFactory
 
+    @Mock
+    lateinit var api: ContactsApi
+
     protected lateinit var context: ContactsContext
     protected lateinit var nextState: ContactsState
 
@@ -41,6 +48,11 @@ internal abstract class BaseStateTest : TestsWithMocks() {
 
         context = object : ContactsContext {
             override val factory: ContactsFactory get() = this@BaseStateTest.factory
+            override val resourceWrapper: ResourceWrapper = object : ResourceWrapper {
+                override suspend fun getString(resource: StringResource, vararg args: Any): String {
+                    return STRING_RESOURCE
+                }
+            }
         }
         nextState = object : ContactsState() {
             override fun doStart() = Unit
@@ -57,5 +69,9 @@ internal abstract class BaseStateTest : TestsWithMocks() {
     @AfterTest
     fun tearDown() {
         Dispatchers.resetMain()
+    }
+
+    companion object {
+        const val STRING_RESOURCE = "some string"
     }
 }
