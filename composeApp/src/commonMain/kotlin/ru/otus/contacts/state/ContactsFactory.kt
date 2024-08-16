@@ -5,6 +5,7 @@ import ru.otus.contacts.ResourceWrapper
 import ru.otus.contacts.data.ErrorCode
 import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
+import ru.otus.contacts.database.ContactsDbProvider
 import ru.otus.contacts.network.ContactsApiImpl
 
 interface ContactsFactory {
@@ -18,7 +19,7 @@ interface ContactsFactory {
     fun terminated(): ContactsState
 }
 
-class ContactsFactoryImpl : ContactsFactory {
+class ContactsFactoryImpl(private val dbProvider: ContactsDbProvider) : ContactsFactory {
     private val context: ContactsContext = object : ContactsContext {
         override val factory: ContactsFactory = this@ContactsFactoryImpl
         override val resourceWrapper: ResourceWrapper = ComposeResourceWrapper
