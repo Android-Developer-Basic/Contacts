@@ -1,10 +1,15 @@
 package ru.otus.contacts
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import ru.otus.contacts.data.UiGesture
+import ru.otus.contacts.state.ContactsFactoryImpl
 
-class MainActivityViewModel : ViewModel() {
-    private val model = Model()
+class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
+
+    private val model = Model(
+        ContactsFactoryImpl(getApplication<App>().dbProvider)
+    )
 
     val uiState get() = model.uiState
     fun onGesture(gesture: UiGesture) = model.onGesture(gesture)

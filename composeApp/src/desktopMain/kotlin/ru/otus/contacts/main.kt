@@ -5,11 +5,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import io.github.aakira.napier.Napier
+import ru.otus.contacts.database.ContactsDbProviderImpl
+import ru.otus.contacts.state.ContactsFactoryImpl
 
 fun main() = application {
     Napier.d { "Desktop app start" }
 
-    val viewModel = Model()
+    val dbProvider = ContactsDbProviderImpl()
+    val factory = ContactsFactoryImpl(dbProvider)
+    val viewModel = Model(factory)
 
     Window(
         onCloseRequest = ::exitApplication,
