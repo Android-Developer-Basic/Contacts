@@ -7,6 +7,7 @@ import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.database.ContactsDbProvider
 import ru.otus.contacts.network.ContactsApiImpl
+import ru.otus.contacts.usecase.LoadContactsImpl
 
 interface ContactsFactory {
     fun login(loginFormData: LoginFormData = LoginFormData()): ContactsState
@@ -14,7 +15,10 @@ interface ContactsFactory {
     fun loggingIn(loginFormData: LoginFormData): ContactsState
     fun loginError(loginFormData: LoginFormData, code: ErrorCode, message: String): ContactsState
 
-    fun loadingContacts(sessionClaims: SessionClaims):ContactsState
+    fun loadingContacts(sessionClaims: SessionClaims): ContactsState
+    fun loadingContactsError(sessionClaims: SessionClaims, code: ErrorCode, message: String): ContactsState
+
+    fun contactList(sessionClaims: SessionClaims): ContactsState
 
     fun terminated(): ContactsState
 }
@@ -41,13 +45,30 @@ class ContactsFactoryImpl(private val dbProvider: ContactsDbProvider) : Contacts
         context,
         code,
         message,
-        { login(loginFormData) },
-        { login(loginFormData) }
+        onBack = { login(loginFormData) },
+        onAction = { login(loginFormData) }
     )
 
     override fun loadingContacts(sessionClaims: SessionClaims): ContactsState = LoadingContactsState(
         context,
-        sessionClaims
+        sessionClaims,
+        dbProvider,
+        LoadContactsImpl(dbProvider, api)
+    )
+
+    override fun loadingContactsError(sessionClaims: SessionClaims, code: ErrorCode, message: String): ContactsState = ErrorState (
+        context,
+        code,
+        message,
+        onBack = { login(LoginFormData(userName = sessionClaims.username)) },
+        onAction = { loadingContacts(sessionClaims) }
+    )
+
+    override fun contactList(sessionClaims: SessionClaims): ContactsState = ContactListState(
+        context,
+        sessionClaims,
+        dbProvider,
+        LoadContactsImpl(dbProvider, api)
     )
 
     override fun terminated(): ContactsState = Terminated()

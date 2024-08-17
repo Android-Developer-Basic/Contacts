@@ -183,9 +183,4 @@ internal class LoginStateTest : BaseStateTest() {
             stateMachine.setMachineState(nextState)
         }
     }
-
-    companion object {
-        const val U_NAME = "name"
-        const val U_PASS = "pass"
-    }
 }

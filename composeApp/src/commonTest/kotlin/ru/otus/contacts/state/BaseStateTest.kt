@@ -13,12 +13,15 @@ import org.kodein.mock.tests.TestsWithMocks
 import ru.otus.contacts.ResourceWrapper
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
+import ru.otus.contacts.database.ContactsDb
+import ru.otus.contacts.database.ContactsDbProvider
 import kotlin.test.AfterTest
 
 @ExperimentalCoroutinesApi
 @UsesMocks(
     CommonStateMachine::class,
-    ContactsFactory::class
+    ContactsFactory::class,
+    ContactsDb::class,
 )
 internal abstract class BaseStateTest : TestsWithMocks() {
     override fun setUpMocks() {
@@ -32,8 +35,12 @@ internal abstract class BaseStateTest : TestsWithMocks() {
     @Mock
     lateinit var factory: ContactsFactory
 
+    @Mock
+    lateinit var db: ContactsDb
+
     protected lateinit var context: ContactsContext
     protected lateinit var nextState: ContactsState
+    protected lateinit var dbProvider: ContactsDbProvider
 
     private fun init() {
         every { stateMachine.setMachineState(isNotNull()) } returns Unit
@@ -50,6 +57,9 @@ internal abstract class BaseStateTest : TestsWithMocks() {
         nextState = object : ContactsState() {
             override fun doStart() = Unit
             override fun doProcess(gesture: UiGesture) = Unit
+        }
+        dbProvider = object : ContactsDbProvider {
+            override suspend fun getDb(): ContactsDb = db
         }
 
         Dispatchers.setMain(UnconfinedTestDispatcher())

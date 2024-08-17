@@ -4,6 +4,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.HttpRequestBuilder
+import io.ktor.client.request.bearerAuth
+import io.ktor.client.request.get
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -16,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import ru.otus.contacts.data.ContactsData
 import ru.otus.contacts.data.HttpResponse
 import ru.otus.contacts.data.LoginRequest
 import ru.otus.contacts.data.SessionClaims
@@ -24,6 +27,7 @@ import ru.otus.contacts.getPlatform
 
 interface ContactsApi {
     suspend fun login(credentials: LoginRequest): HttpResponse<SessionClaims>
+    suspend fun loadContacts(claims: SessionClaims, count: Int): HttpResponse<ContactsData>
 }
 
 class ContactsApiImpl : ContactsApi {
@@ -39,6 +43,19 @@ class ContactsApiImpl : ContactsApi {
                 platformUrl(listOf("login"))
                 contentType(ContentType.Application.Json)
                 setBody(credentials)
+            }
+        }
+        return result.body()
+    }
+
+    override suspend fun loadContacts(claims: SessionClaims, count: Int): HttpResponse<ContactsData> {
+        val result = withContext(Dispatchers.IO) {
+            httpClient.get {
+                platformUrl(listOf("contacts")) {
+                    parameters["count"] = count.toString()
+                }
+                bearerAuth(claims.token)
+                contentType(ContentType.Application.Json)
             }
         }
         return result.body()
