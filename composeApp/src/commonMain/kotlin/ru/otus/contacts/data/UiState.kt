@@ -1,5 +1,7 @@
 package ru.otus.contacts.data
 
+import androidx.compose.runtime.Immutable
+
 /**
  * Application view-states
  */
@@ -10,6 +12,12 @@ sealed class UiState {
         val userName: String,
         val password: String,
         val loginButtonEnabled: Boolean
-    ): UiState()
+    ) : UiState()
+    @Immutable
+    data class ContactList(
+        val userName: String,
+        val filter: String,
+        val contacts: Map<Char, List<Contact>>
+    ) : UiState()
     data object Terminated : UiState()
 }

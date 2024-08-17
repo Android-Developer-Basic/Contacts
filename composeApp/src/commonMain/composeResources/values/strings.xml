@@ -10,5 +10,7 @@
     <string name="logging-in">Logging-in...</string>
     <string name="loading-contacts">Loading contacts...</string>
 
-
+    <string name="contacts">Contact list</string>
+    <string name="btn_refresh_content">Refresh</string>
+    <string name="input_filter">Filter by name</string>
 </resources>

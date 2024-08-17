@@ -1,9 +1,18 @@
 package ru.otus.contacts.state
 
-import contacts.composeapp.generated.resources.Res
-import contacts.composeapp.generated.resources.loading_contacts
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.otus.contacts.data.Contact
 import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
@@ -15,8 +24,12 @@ internal class ContactListState(
     context: ContactsContext,
     private val sessionClaims: SessionClaims,
     private val contactsDbProvider: ContactsDbProvider,
-    private val doLoadContacts: LoadContacts
+    private val doLoadContacts: LoadContacts,
+    filterValue: String
 ) : BaseContactsState(context) {
+
+    private val filter = MutableStateFlow(filterValue)
+
     /**
      * A part of [start] template to initialize state
      */
@@ -25,20 +38,43 @@ internal class ContactListState(
         subscribeContacts()
     }
 
+    @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
     private fun subscribeContacts() {
         stateScope.launch {
-            setUiState(UiState.Loading(resourceWrapper.getString(Res.string.loading_contacts)))
+            val db = contactsDbProvider.getDb()
+            val loadContacts: (String) -> Flow<Map<Char, List<Contact>>> = {
+                db.listContacts(sessionClaims.username, it.takeIf { it.isNotBlank() })
+                    .map { it.groupBy { it.name.first() } }
+                    .flowOn(Dispatchers.Default)
+            }
+
+            combine(
+                filter,
+                filter.debounce(DEBOUNCE).flatMapLatest(loadContacts),
+                transform = { fValue, contacts ->
+                    UiState.ContactList(sessionClaims.username, fValue, contacts)
+                }
+            ).collect(::setUiState)
         }
     }
 
     /**
      * A part of [process] template to process UI gesture
      */
-    override fun doProcess(gesture: UiGesture) = when(gesture) {
-        UiGesture.Back -> {
-            Napier.i { "Back. Terminating..." }
-            setMachineState(factory.login(LoginFormData(userName = sessionClaims.username)))
+    override fun doProcess(gesture: UiGesture) {
+        when (gesture) {
+            is UiGesture.Contacts.Filter -> {
+                filter.tryEmit(gesture.value)
+            }
+            UiGesture.Back -> {
+                Napier.i { "Back. Terminating..." }
+                setMachineState(factory.login(LoginFormData(userName = sessionClaims.username)))
+            }
+            else -> super.doProcess(gesture)
         }
-        else -> super.doProcess(gesture)
+    }
+
+    companion object {
+        internal const val DEBOUNCE = 300L
     }
 }
