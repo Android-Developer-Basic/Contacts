@@ -31,10 +31,10 @@ upsertContact:
 INSERT INTO Contacts VALUES (?, ?, ?, ?, ?, ?);
 
 listAllContacts:
-SELECT * FROM Contacts WHERE userName = ?;
+SELECT * FROM Contacts WHERE userName = ? ORDER BY userName, name;
 
 selectContact:
 SELECT * FROM Contacts WHERE userName = ? AND contactId = ?;
 
 findContacts:
-SELECT * FROM Contacts WHERE userName = :userName AND name LIKE (:name || '%');
+SELECT * FROM Contacts WHERE userName = :userName AND name LIKE (:name || '%') ORDER BY userName, name;

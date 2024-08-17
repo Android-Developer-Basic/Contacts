@@ -68,7 +68,8 @@ class ContactsFactoryImpl(private val dbProvider: ContactsDbProvider) : Contacts
         context,
         sessionClaims,
         dbProvider,
-        LoadContactsImpl(dbProvider, api)
+        LoadContactsImpl(dbProvider, api),
+        ""
     )
 
     override fun terminated(): ContactsState = Terminated()

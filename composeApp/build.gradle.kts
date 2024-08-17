@@ -64,9 +64,13 @@ kotlin {
             implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.content.negotiation)
             implementation(libs.ktor.serialization.contentJson)
             implementation(libs.sql.runtime)
             implementation(libs.sql.coroutines)
+            implementation(libs.coil.core)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.ktor)
         }
 
         commonTest.dependencies {
