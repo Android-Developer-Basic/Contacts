@@ -1,5 +1,9 @@
 package ru.otus.contacts.view
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -24,9 +28,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -34,6 +41,7 @@ import contacts.composeapp.generated.resources.Res
 import contacts.composeapp.generated.resources.btn_refresh_content
 import contacts.composeapp.generated.resources.contacts
 import contacts.composeapp.generated.resources.input_filter
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import ru.otus.contacts.data.Contact
 import ru.otus.contacts.data.UiGesture
@@ -42,11 +50,30 @@ import ru.otus.contacts.data.UiState
 @Composable
 @OptIn(ExperimentalFoundationApi::class)
 fun ContactList(state: UiState.ContactList, onGesture: (UiGesture) -> Unit) {
+    val angle = remember(state.refreshing) {
+        Animatable(0f)
+    }
+    LaunchedEffect(state.refreshing) {
+        launch {
+            if (state.refreshing) {
+                angle.animateTo(
+                    targetValue = 360f,
+                    animationSpec = infiniteRepeatable(
+                        tween(2000, easing = LinearEasing)
+                    )
+                )
+            }
+        }
+    }
+
     ScreenScaffold(
         title = stringResource(Res.string.contacts),
         onGesture = onGesture,
         actions = {
-            IconButton(onClick = { onGesture(UiGesture.Contacts.Refresh) }) {
+            IconButton(
+                modifier = Modifier.rotate(angle.value),
+                onClick = { onGesture(UiGesture.Contacts.Refresh) }
+            ) {
                 Icon(
                     imageVector = Icons.Filled.Refresh,
                     contentDescription = stringResource(Res.string.btn_refresh_content)
@@ -102,9 +129,6 @@ fun ContactList(state: UiState.ContactList, onGesture: (UiGesture) -> Unit) {
 
 @Composable
 private fun ContactView(data: Contact) {
-    val bgColor = MaterialTheme.colorScheme.primary
-    val textColor = MaterialTheme.colorScheme.onPrimary
-
     Row(
         modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
         horizontalArrangement = Arrangement.spacedBy(10.dp),

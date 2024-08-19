@@ -3,6 +3,7 @@ package ru.otus.contacts.state
 import com.motorro.commonstatemachine.CommonStateMachine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -29,8 +30,11 @@ import kotlin.test.AfterTest
     LoadContacts::class
 )
 internal abstract class BaseStateTest : TestsWithMocks() {
+    protected lateinit var dispatcher: TestDispatcher
+
     override fun setUpMocks() {
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        dispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(dispatcher)
         mocker.injectMocks(this)
         init()
     }

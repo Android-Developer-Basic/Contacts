@@ -17,7 +17,8 @@ sealed class UiState {
     data class ContactList(
         val userName: String,
         val filter: String,
-        val contacts: Map<Char, List<Contact>>
+        val contacts: Map<Char, List<Contact>>,
+        val refreshing: Boolean
     ) : UiState()
     data object Terminated : UiState()
 }
