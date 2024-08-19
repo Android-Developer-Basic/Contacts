@@ -11,7 +11,6 @@ private const val MAX_COUNT = 100
 private val faker = Faker()
 
 fun getContacts(number: Int? = null): Array<Contact> = Array((number ?: DEFAULT_COUNT).coerceIn(0..MAX_COUNT)) { index ->
-
     val name = faker.name().fullName()
     Contact(
         id = "contact$index",

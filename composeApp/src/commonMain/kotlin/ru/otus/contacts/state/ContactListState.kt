@@ -1,6 +1,7 @@
 package ru.otus.contacts.state
 
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.otus.contacts.data.Contact
+import ru.otus.contacts.data.HttpException
 import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
@@ -25,10 +27,12 @@ internal class ContactListState(
     private val sessionClaims: SessionClaims,
     private val contactsDbProvider: ContactsDbProvider,
     private val doLoadContacts: LoadContacts,
-    filterValue: String
+    filterValue: String,
+    private val transformDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : BaseContactsState(context) {
 
     private val filter = MutableStateFlow(filterValue)
+    private var refreshing = MutableStateFlow(false)
 
     /**
      * A part of [start] template to initialize state
@@ -44,17 +48,37 @@ internal class ContactListState(
             val db = contactsDbProvider.getDb()
             val loadContacts: (String) -> Flow<Map<Char, List<Contact>>> = {
                 db.listContacts(sessionClaims.username, it.takeIf { it.isNotBlank() })
-                    .map { it.groupBy { it.name.first() } }
-                    .flowOn(Dispatchers.Default)
+                    .map { contacts -> contacts.groupBy { contact -> contact.name.first() } }
+                    .flowOn(transformDispatcher)
             }
 
             combine(
                 filter,
                 filter.debounce(DEBOUNCE).flatMapLatest(loadContacts),
-                transform = { fValue, contacts ->
-                    UiState.ContactList(sessionClaims.username, fValue, contacts)
+                refreshing,
+                transform = { f, c, r ->
+                    UiState.ContactList(sessionClaims.username, f, c, r)
                 }
             ).collect(::setUiState)
+        }
+    }
+
+    private fun refresh() {
+        if (refreshing.value) return
+        stateScope.launch {
+            refreshing.emit(true)
+            Napier.i { "Refreshing contacts..." }
+            try {
+                doLoadContacts(sessionClaims)
+                refreshing.emit(false)
+            } catch (e: HttpException) {
+                Napier.w(e) { "Error refreshing contacts" }
+                setMachineState(factory.loadingContactsError(
+                    sessionClaims,
+                    e.code,
+                    e.message ?: e.code.defaultMessage
+                ))
+            }
         }
     }
 
@@ -66,6 +90,7 @@ internal class ContactListState(
             is UiGesture.Contacts.Filter -> {
                 filter.tryEmit(gesture.value)
             }
+            UiGesture.Contacts.Refresh -> refresh()
             UiGesture.Back -> {
                 Napier.i { "Back. Terminating..." }
                 setMachineState(factory.login(LoginFormData(userName = sessionClaims.username)))

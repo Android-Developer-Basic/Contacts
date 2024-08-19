@@ -3,6 +3,7 @@ package ru.otus.contacts.state
 import com.motorro.commonstatemachine.CommonStateMachine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.TestDispatcher
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
@@ -41,6 +42,7 @@ internal abstract class BaseStateTest : TestsWithMocks() {
     protected lateinit var context: ContactsContext
     protected lateinit var nextState: ContactsState
     protected lateinit var dbProvider: ContactsDbProvider
+    protected lateinit var dispatcher: TestDispatcher
 
     private fun init() {
         every { stateMachine.setMachineState(isNotNull()) } returns Unit
@@ -61,8 +63,8 @@ internal abstract class BaseStateTest : TestsWithMocks() {
         dbProvider = object : ContactsDbProvider {
             override suspend fun getDb(): ContactsDb = db
         }
-
-        Dispatchers.setMain(UnconfinedTestDispatcher())
+        dispatcher = UnconfinedTestDispatcher()
+        Dispatchers.setMain(dispatcher)
 
         doInit()
     }

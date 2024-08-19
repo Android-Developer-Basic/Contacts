@@ -15,7 +15,7 @@ val contact1 = Contact(
 )
 
 val contact2 = Contact(
-    id = "contact12",
+    id = "contact2",
     name = "Petya",
     email = "petya@otus.ru",
     phone = "+7(916)7654321",
