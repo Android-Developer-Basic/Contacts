@@ -91,6 +91,14 @@ internal class ContactListState(
                 filter.tryEmit(gesture.value)
             }
             UiGesture.Contacts.Refresh -> refresh()
+            is UiGesture.Contacts.Click -> {
+                Napier.i { "Selecting contact: ${gesture.contactId}" }
+                setMachineState(factory.contactCard(
+                    sessionClaims,
+                    filter.value,
+                    gesture.contactId
+                ))
+            }
             UiGesture.Back -> {
                 Napier.i { "Back. Terminating..." }
                 setMachineState(factory.login(LoginFormData(userName = sessionClaims.username)))

@@ -20,5 +20,7 @@ sealed class UiState {
         val contacts: Map<Char, List<Contact>>,
         val refreshing: Boolean
     ) : UiState()
+    @Immutable
+    data class ContactCard(val contact: Contact) : UiState()
     data object Terminated : UiState()
 }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.LaunchedEffect
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
+import ru.otus.contacts.view.ContactCard
 import ru.otus.contacts.view.ContactList
 import ru.otus.contacts.view.FatalErrorScreen
 import ru.otus.contacts.view.LoadingScreen
@@ -20,6 +21,7 @@ fun App(state: UiState, onComplete: () -> Unit, onGesture: (UiGesture) -> Unit) 
             is UiState.Error -> FatalErrorScreen(state, onGesture)
             is UiState.LoginForm -> LoginScreen(state, onGesture)
             is UiState.ContactList -> ContactList(state, onGesture)
+            is UiState.ContactCard -> ContactCard(state, onGesture)
             UiState.Terminated -> LaunchedEffect(state) { onComplete() }
         }
     }
