@@ -14,7 +14,6 @@ import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
-import ru.otus.contacts.database.ContactsDb
 import ru.otus.contacts.usecase.LoadContacts
 import kotlin.coroutines.suspendCoroutine
 import kotlin.test.Test

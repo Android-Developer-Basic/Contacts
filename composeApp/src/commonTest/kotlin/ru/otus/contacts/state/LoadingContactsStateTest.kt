@@ -11,7 +11,6 @@ import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
-import ru.otus.contacts.database.ContactsDb
 import ru.otus.contacts.network.ContactsApi
 import ru.otus.contacts.usecase.LoadContacts
 import kotlin.coroutines.suspendCoroutine
@@ -35,7 +34,7 @@ internal class LoadingContactsStateTest : BaseStateTest() {
     @Test
     fun switchesToContactListIfCacheIsThere() = runTest {
         everySuspending { db.hasLocalContacts(isNotNull()) } returns true
-        every { factory.contactList(isNotNull()) } returns nextState
+        every { factory.contactList(isNotNull(), isNotNull()) } returns nextState
 
         state.start(stateMachine)
 
@@ -51,7 +50,7 @@ internal class LoadingContactsStateTest : BaseStateTest() {
     fun loadsContactsIfCacheNotFound() = runTest {
         everySuspending { db.hasLocalContacts(isNotNull()) } returns false
         everySuspending { loadContacts.invoke(isNotNull(), isNotNull()) } returns Unit
-        every { factory.contactList(isNotNull()) } returns nextState
+        every { factory.contactList(isNotNull(), isNotNull()) } returns nextState
 
         state.start(stateMachine)
 

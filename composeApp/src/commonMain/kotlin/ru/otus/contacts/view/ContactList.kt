@@ -8,6 +8,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -118,7 +119,7 @@ fun ContactList(state: UiState.ContactList, onGesture: (UiGesture) -> Unit) {
                             }
                         }
                         items(contacts, { it.id }) {
-                            ContactView(it)
+                            ContactView(it, onGesture)
                         }
                     }
                 }
@@ -128,9 +129,11 @@ fun ContactList(state: UiState.ContactList, onGesture: (UiGesture) -> Unit) {
 }
 
 @Composable
-private fun ContactView(data: Contact) {
+private fun ContactView(data: Contact, onGesture: (UiGesture) -> Unit) {
     Row(
-        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp).clickable {
+            onGesture(UiGesture.Contacts.Click(data.id))
+        },
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {

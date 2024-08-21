@@ -12,5 +12,6 @@ sealed class UiGesture {
     sealed class Contacts : UiGesture() {
         data object Refresh : Contacts()
         data class Filter(val value: String) : Contacts()
+        data class Click(val contactId: String) : Contacts()
     }
 }

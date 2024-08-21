@@ -18,7 +18,20 @@ interface ContactsFactory {
     fun loadingContacts(sessionClaims: SessionClaims): ContactsState
     fun loadingContactsError(sessionClaims: SessionClaims, code: ErrorCode, message: String): ContactsState
 
-    fun contactList(sessionClaims: SessionClaims): ContactsState
+    fun contactList(sessionClaims: SessionClaims, filter: String = ""): ContactsState
+
+    fun contactCard(
+        sessionClaims: SessionClaims,
+        filter: String,
+        contactId: String
+    ): ContactsState
+    fun contactCardError(
+        sessionClaims: SessionClaims,
+        filter: String,
+        contactId: String,
+        code: ErrorCode,
+        message: String
+    ): ContactsState
 
     fun terminated(): ContactsState
 }
@@ -64,12 +77,28 @@ class ContactsFactoryImpl(private val dbProvider: ContactsDbProvider) : Contacts
         onAction = { loadingContacts(sessionClaims) }
     )
 
-    override fun contactList(sessionClaims: SessionClaims): ContactsState = ContactListState(
+    override fun contactList(sessionClaims: SessionClaims, filter: String): ContactsState = ContactListState(
         context,
         sessionClaims,
         dbProvider,
         LoadContactsImpl(dbProvider, api),
-        ""
+        filter
+    )
+
+    override fun contactCard(sessionClaims: SessionClaims, filter: String, contactId: String): ContactsState = ContactCardState(
+        context,
+        sessionClaims,
+        filter,
+        contactId,
+        dbProvider
+    )
+
+    override fun contactCardError(sessionClaims: SessionClaims, filter: String, contactId: String, code: ErrorCode, message: String): ContactsState  = ErrorState (
+        context,
+        code,
+        message,
+        onBack = { contactList(sessionClaims, filter) },
+        onAction = { contactList(sessionClaims, filter) }
     )
 
     override fun terminated(): ContactsState = Terminated()

@@ -13,4 +13,8 @@
     <string name="contacts">Contact list</string>
     <string name="btn_refresh_content">Refresh</string>
     <string name="input_filter">Filter by name</string>
+
+    <string name="phone_content">Phone number</string>
+    <string name="email_content">Email</string>
+
 </resources>
