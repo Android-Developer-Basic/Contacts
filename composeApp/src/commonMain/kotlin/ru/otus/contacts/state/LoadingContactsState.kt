@@ -4,6 +4,7 @@ import contacts.composeapp.generated.resources.Res
 import contacts.composeapp.generated.resources.loading_contacts
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
+import ru.otus.contacts.data.ContactsDataState
 import ru.otus.contacts.data.HttpException
 import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
@@ -35,7 +36,7 @@ internal class LoadingContactsState(
                     Napier.i { "No local contacts database. Loading..." }
                     doLoadContacts(sessionClaims)
                 }
-                setMachineState(factory.contactList(sessionClaims))
+                setMachineState(factory.contactList(ContactsDataState(sessionClaims)))
             } catch (e: HttpException) {
                 Napier.w(e) { "Error updating contacts" }
                 setMachineState(factory.loadingContactsError(sessionClaims, e.code, e.message ?: e.code.defaultMessage))

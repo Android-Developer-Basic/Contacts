@@ -2,6 +2,7 @@ package ru.otus.contacts.state
 
 import ru.otus.contacts.ComposeResourceWrapper
 import ru.otus.contacts.ResourceWrapper
+import ru.otus.contacts.data.ContactsDataState
 import ru.otus.contacts.data.ErrorCode
 import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
@@ -18,17 +19,14 @@ interface ContactsFactory {
     fun loadingContacts(sessionClaims: SessionClaims): ContactsState
     fun loadingContactsError(sessionClaims: SessionClaims, code: ErrorCode, message: String): ContactsState
 
-    fun contactList(sessionClaims: SessionClaims, filter: String = ""): ContactsState
+    fun contactList(dataState: ContactsDataState): ContactsState
 
     fun contactCard(
-        sessionClaims: SessionClaims,
-        filter: String,
+        dataState: ContactsDataState,
         contactId: String
     ): ContactsState
     fun contactCardError(
-        sessionClaims: SessionClaims,
-        filter: String,
-        contactId: String,
+        dataState: ContactsDataState,
         code: ErrorCode,
         message: String
     ): ContactsState
@@ -77,28 +75,26 @@ class ContactsFactoryImpl(private val dbProvider: ContactsDbProvider) : Contacts
         onAction = { loadingContacts(sessionClaims) }
     )
 
-    override fun contactList(sessionClaims: SessionClaims, filter: String): ContactsState = ContactListState(
+    override fun contactList(dataState: ContactsDataState): ContactsState = ContactListState(
         context,
-        sessionClaims,
+        dataState,
         dbProvider,
-        LoadContactsImpl(dbProvider, api),
-        filter
+        LoadContactsImpl(dbProvider, api)
     )
 
-    override fun contactCard(sessionClaims: SessionClaims, filter: String, contactId: String): ContactsState = ContactCardState(
+    override fun contactCard(dataState: ContactsDataState, contactId: String): ContactsState = ContactCardState(
         context,
-        sessionClaims,
-        filter,
+        dataState,
         contactId,
         dbProvider
     )
 
-    override fun contactCardError(sessionClaims: SessionClaims, filter: String, contactId: String, code: ErrorCode, message: String): ContactsState  = ErrorState (
+    override fun contactCardError(dataState: ContactsDataState, code: ErrorCode, message: String): ContactsState = ErrorState (
         context,
         code,
         message,
-        onBack = { contactList(sessionClaims, filter) },
-        onAction = { contactList(sessionClaims, filter) }
+        onBack = { contactList(dataState) },
+        onAction = { contactList(dataState) }
     )
 
     override fun terminated(): ContactsState = Terminated()

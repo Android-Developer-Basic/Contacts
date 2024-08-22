@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import ru.otus.contacts.data.ContactsDataState
 import ru.otus.contacts.data.ErrorCode
 import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
@@ -19,12 +20,19 @@ internal class ContactCardStateTest : BaseStateTest() {
     private val sessionClaims = SessionClaims(U_NAME, TOKEN)
     private val filter = "filter"
     private val contactId = contact1.id
+    private val dataState = ContactsDataState(
+        sessionClaims,
+        filter,
+        mapOf(
+            'V' to listOf(contact1),
+            'P' to listOf(contact2)
+        )
+    )
 
     override fun doInit() {
         state = ContactCardState(
             context,
-            sessionClaims,
-            filter,
+            dataState,
             contactId,
             dbProvider
         )
@@ -49,8 +57,6 @@ internal class ContactCardStateTest : BaseStateTest() {
         every { factory.contactCardError(
             isNotNull(),
             isNotNull(),
-            isNotNull(),
-            isNotNull(),
             isNotNull()
         ) } returns nextState
 
@@ -60,9 +66,7 @@ internal class ContactCardStateTest : BaseStateTest() {
         verifyWithSuspend {
             db.getContact(U_NAME, contactId)
             factory.contactCardError(
-                sessionClaims,
-                filter,
-                contactId,
+                dataState,
                 ErrorCode.NOT_FOUND,
                 ErrorCode.NOT_FOUND.defaultMessage
             )
@@ -75,13 +79,12 @@ internal class ContactCardStateTest : BaseStateTest() {
         every { db.getContact(isNotNull(), isNotNull()) } returns flow {
             suspendCoroutine {  }
         }
-        every { factory.contactList(isNotNull(), isAny()) } returns nextState
+        every { factory.contactList(isNotNull()) } returns nextState
 
         state.start(stateMachine)
         state.process(UiGesture.Back)
 
         verify(exhaustive = false) {
-
             stateMachine.setMachineState(nextState)
         }
     }

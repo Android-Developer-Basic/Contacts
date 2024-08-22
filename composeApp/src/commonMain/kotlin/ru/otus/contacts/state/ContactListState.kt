@@ -14,31 +14,35 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import ru.otus.contacts.data.Contact
+import ru.otus.contacts.data.ContactsDataState
 import ru.otus.contacts.data.HttpException
 import ru.otus.contacts.data.LoginFormData
-import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
 import ru.otus.contacts.database.ContactsDbProvider
 import ru.otus.contacts.usecase.LoadContacts
+import kotlin.properties.Delegates
 
 internal class ContactListState(
     context: ContactsContext,
-    private val sessionClaims: SessionClaims,
+    dataState: ContactsDataState,
     private val contactsDbProvider: ContactsDbProvider,
     private val doLoadContacts: LoadContacts,
-    filterValue: String,
     private val transformDispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : BaseContactsState(context) {
 
-    private val filter = MutableStateFlow(filterValue)
-    private var refreshing = MutableStateFlow(false)
+    private val filter = MutableStateFlow(dataState.filter)
+    private var refreshing = false
+    private var dataState by Delegates.observable(dataState) { _, _, update ->
+        render()
+    }
 
     /**
      * A part of [start] template to initialize state
      */
     override fun doStart() {
         Napier.i { "Contact list..." }
+        render()
         subscribeContacts()
     }
 
@@ -47,7 +51,7 @@ internal class ContactListState(
         stateScope.launch {
             val db = contactsDbProvider.getDb()
             val loadContacts: (String) -> Flow<Map<Char, List<Contact>>> = {
-                db.listContacts(sessionClaims.username, it.takeIf { it.isNotBlank() })
+                db.listContacts(dataState.credentials.username, it.takeIf { it.isNotBlank() })
                     .map { contacts -> contacts.groupBy { contact -> contact.name.first() } }
                     .flowOn(transformDispatcher)
             }
@@ -55,26 +59,39 @@ internal class ContactListState(
             combine(
                 filter,
                 filter.debounce(DEBOUNCE).flatMapLatest(loadContacts),
-                refreshing,
-                transform = { f, c, r ->
-                    UiState.ContactList(sessionClaims.username, f, c, r)
-                }
-            ).collect(::setUiState)
+                transform = ::Pair
+            ).collect { (filter, contacts) ->
+                dataState = dataState.copy(
+                    filter = filter,
+                    contacts = contacts
+                )
+            }
         }
     }
 
+    private fun render()  {
+        setUiState(UiState.ContactList(
+            dataState.credentials.username,
+            dataState.filter,
+            dataState.contacts,
+            refreshing
+        ))
+    }
+
     private fun refresh() {
-        if (refreshing.value) return
+        if (refreshing) return
         stateScope.launch {
-            refreshing.emit(true)
             Napier.i { "Refreshing contacts..." }
+            refreshing = true
+            render()
             try {
-                doLoadContacts(sessionClaims)
-                refreshing.emit(false)
+                doLoadContacts(dataState.credentials)
+                refreshing = false
+                render()
             } catch (e: HttpException) {
                 Napier.w(e) { "Error refreshing contacts" }
                 setMachineState(factory.loadingContactsError(
-                    sessionClaims,
+                    dataState.credentials,
                     e.code,
                     e.message ?: e.code.defaultMessage
                 ))
@@ -93,15 +110,11 @@ internal class ContactListState(
             UiGesture.Contacts.Refresh -> refresh()
             is UiGesture.Contacts.Click -> {
                 Napier.i { "Selecting contact: ${gesture.contactId}" }
-                setMachineState(factory.contactCard(
-                    sessionClaims,
-                    filter.value,
-                    gesture.contactId
-                ))
+                setMachineState(factory.contactCard(dataState, gesture.contactId))
             }
             UiGesture.Back -> {
                 Napier.i { "Back. Terminating..." }
-                setMachineState(factory.login(LoginFormData(userName = sessionClaims.username)))
+                setMachineState(factory.login(LoginFormData(userName = dataState.credentials.username)))
             }
             else -> super.doProcess(gesture)
         }
