@@ -4,16 +4,15 @@ import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import ru.otus.contacts.data.ContactsDataState
 import ru.otus.contacts.data.ErrorCode
-import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
 import ru.otus.contacts.database.ContactsDbProvider
 
 internal class  ContactCardState(
     context: ContactsContext,
-    private val sessionClaims: SessionClaims,
-    private val filterValue: String,
+    private val dataState: ContactsDataState,
     private val contactId: String,
     private val contactsDbProvider: ContactsDbProvider
 ) : BaseContactsState(context) {
@@ -26,7 +25,7 @@ internal class  ContactCardState(
         Napier.i { "Getting contact $contactId..." }
         stateScope.launch {
             contactsDbProvider.getDb()
-                .getContact(sessionClaims.username, contactId)
+                .getContact(dataState.credentials.username, contactId)
                 .map(::checkNotNull)
                 .map(UiState::ContactCard)
                 .catch { e ->
@@ -44,9 +43,7 @@ internal class  ContactCardState(
                         }
                     }
                     setMachineState(factory.contactCardError(
-                        sessionClaims,
-                        filterValue,
-                        contactId,
+                        dataState,
                         code,
                         message
                     ))
@@ -62,10 +59,7 @@ internal class  ContactCardState(
         when (gesture) {
             UiGesture.Back -> {
                 Napier.i { "Back. Returning to list..." }
-                setMachineState(factory.contactList(
-                    sessionClaims,
-                    filterValue
-                ))
+                setMachineState(factory.contactList(dataState))
             }
             else -> super.doProcess(gesture)
         }

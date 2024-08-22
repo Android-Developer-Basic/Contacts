@@ -4,6 +4,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.kodein.mock.Mock
 import org.kodein.mock.UsesMocks
+import ru.otus.contacts.data.ContactsDataState
 import ru.otus.contacts.data.ErrorCode
 import ru.otus.contacts.data.HttpException
 import ru.otus.contacts.data.LoginFormData
@@ -44,14 +45,14 @@ internal class LoadingContactsStateTest : BaseStateTest() {
     @Test
     fun switchesToContactListIfCacheIsThere() = runTest {
         everySuspending { db.hasLocalContacts(isNotNull()) } returns true
-        every { factory.contactList(isNotNull(), isNotNull()) } returns nextState
+        every { factory.contactList(isNotNull()) } returns nextState
 
         state.start(stateMachine)
 
         verifyWithSuspend {
             stateMachine.setUiState(UiState.Loading(STRING_RESOURCE))
             db.hasLocalContacts(U_NAME)
-            factory.contactList(sessionClaims)
+            factory.contactList(ContactsDataState(sessionClaims))
             stateMachine.setMachineState(nextState)
         }
     }
@@ -60,7 +61,7 @@ internal class LoadingContactsStateTest : BaseStateTest() {
     fun loadsContactsIfCacheNotFound() = runTest {
         everySuspending { db.hasLocalContacts(isNotNull()) } returns false
         everySuspending { loadContacts.invoke(isNotNull(), isNotNull()) } returns Unit
-        every { factory.contactList(isNotNull(), isNotNull()) } returns nextState
+        every { factory.contactList(isNotNull()) } returns nextState
 
         state.start(stateMachine)
 
@@ -68,7 +69,7 @@ internal class LoadingContactsStateTest : BaseStateTest() {
             stateMachine.setUiState(UiState.Loading(STRING_RESOURCE))
             db.hasLocalContacts(U_NAME)
             loadContacts.invoke(sessionClaims)
-            factory.contactList(sessionClaims)
+            factory.contactList(ContactsDataState(sessionClaims))
             stateMachine.setMachineState(nextState)
         }
     }

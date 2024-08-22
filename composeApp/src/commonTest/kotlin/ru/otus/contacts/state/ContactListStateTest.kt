@@ -10,6 +10,7 @@ import kotlinx.coroutines.yield
 import org.kodein.mock.Mock
 import org.kodein.mock.UsesMocks
 import ru.otus.contacts.data.Contact
+import ru.otus.contacts.data.ContactsDataState
 import ru.otus.contacts.data.LoginFormData
 import ru.otus.contacts.data.SessionClaims
 import ru.otus.contacts.data.UiGesture
@@ -30,15 +31,19 @@ internal class ContactListStateTest : BaseStateTest() {
 
     private val sessionClaims = SessionClaims(U_NAME, TOKEN)
     private val filter = "filter"
+    private val dataState = ContactsDataState(
+        sessionClaims,
+        filter,
+        emptyMap()
+    )
 
     override fun doInit() {
         injectMocks(mocker)
         state = ContactListState(
             context,
-            sessionClaims,
+            dataState,
             dbProvider,
             loadContacts,
-            filter,
             dispatcher
         )
     }
@@ -51,6 +56,12 @@ internal class ContactListStateTest : BaseStateTest() {
         advanceUntilIdle()
 
         verifyWithSuspend {
+            stateMachine.setUiState(UiState.ContactList(
+                sessionClaims.username,
+                filter,
+                emptyMap(),
+                false
+            ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
@@ -77,6 +88,12 @@ internal class ContactListStateTest : BaseStateTest() {
         advanceUntilIdle()
 
         verifyWithSuspend {
+            stateMachine.setUiState(UiState.ContactList(
+                sessionClaims.username,
+                filter,
+                emptyMap(),
+                false
+            ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
@@ -111,6 +128,12 @@ internal class ContactListStateTest : BaseStateTest() {
         advanceUntilIdle()
 
         verifyWithSuspend {
+            stateMachine.setUiState(UiState.ContactList(
+                sessionClaims.username,
+                filter,
+                emptyMap(),
+                false
+            ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
@@ -153,6 +176,12 @@ internal class ContactListStateTest : BaseStateTest() {
         advanceUntilIdle()
 
         verifyWithSuspend {
+            stateMachine.setUiState(UiState.ContactList(
+                sessionClaims.username,
+                filter,
+                emptyMap(),
+                false
+            ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
@@ -163,7 +192,6 @@ internal class ContactListStateTest : BaseStateTest() {
                 ),
                 false
             ))
-            loadContacts(sessionClaims)
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
                 filter,
@@ -173,6 +201,7 @@ internal class ContactListStateTest : BaseStateTest() {
                 ),
                 true
             ))
+            loadContacts(sessionClaims)
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
                 filter,
@@ -182,6 +211,45 @@ internal class ContactListStateTest : BaseStateTest() {
                 ),
                 false
             ))
+        }
+    }
+
+    @Test
+    fun advancesToContactCardOnClick() = runTest {
+        every { db.listContacts(isNotNull(), isAny()) } returns flowOf(CONTACTS)
+        every { factory.contactCard(isNotNull(), isNotNull()) } returns nextState
+
+        state.start(stateMachine)
+        advanceUntilIdle()
+        state.process(UiGesture.Contacts.Click(contact1.id))
+
+        verifyWithSuspend {
+            stateMachine.setUiState(UiState.ContactList(
+                sessionClaims.username,
+                filter,
+                emptyMap(),
+                false
+            ))
+            db.listContacts(U_NAME, filter)
+            stateMachine.setUiState(UiState.ContactList(
+                sessionClaims.username,
+                filter,
+                mapOf(
+                    'V' to listOf(contact1),
+                    'P' to listOf(contact2)
+                ),
+                false
+            ))
+            factory.contactCard(
+                dataState.copy(
+                    contacts = mapOf(
+                        'V' to listOf(contact1),
+                        'P' to listOf(contact2)
+                    )
+                ),
+                contact1.id
+            )
+            stateMachine.setMachineState(nextState)
         }
     }
 
