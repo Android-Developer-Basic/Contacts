@@ -36,6 +36,7 @@ internal class ContactListState(
     private var dataState by Delegates.observable(dataState) { _, _, update ->
         render()
     }
+    private var scroll = dataState.firstVisibleItemIndex
 
     /**
      * A part of [start] template to initialize state
@@ -63,7 +64,8 @@ internal class ContactListState(
             ).collect { (filter, contacts) ->
                 dataState = dataState.copy(
                     filter = filter,
-                    contacts = contacts
+                    contacts = contacts,
+                    firstVisibleItemIndex = 0
                 )
             }
         }
@@ -74,7 +76,8 @@ internal class ContactListState(
             dataState.credentials.username,
             dataState.filter,
             dataState.contacts,
-            refreshing
+            refreshing,
+            dataState.firstVisibleItemIndex
         ))
     }
 
@@ -111,6 +114,9 @@ internal class ContactListState(
             is UiGesture.Contacts.Click -> {
                 Napier.i { "Selecting contact: ${gesture.contactId}" }
                 setMachineState(factory.contactCard(dataState, gesture.contactId))
+            }
+            is UiGesture.Contacts.Scroll -> {
+                dataState = dataState.copy(firstVisibleItemIndex = gesture.position)
             }
             UiGesture.Back -> {
                 Napier.i { "Back. Terminating..." }
