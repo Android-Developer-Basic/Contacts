@@ -18,7 +18,8 @@ sealed class UiState {
         val userName: String,
         val filter: String,
         val contacts: Map<Char, List<Contact>>,
-        val refreshing: Boolean
+        val refreshing: Boolean,
+        val firstVisibleItemIndex: Int
     ) : UiState()
     @Immutable
     data class ContactCard(val contact: Contact) : UiState()

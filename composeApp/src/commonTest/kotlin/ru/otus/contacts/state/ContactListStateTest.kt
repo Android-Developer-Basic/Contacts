@@ -29,7 +29,7 @@ internal class ContactListStateTest : BaseStateTest() {
     private val dataState = ContactsDataState(
         sessionClaims,
         filter,
-        emptyMap()
+        contacts = emptyMap()
     )
 
     override fun doInit() {
@@ -54,7 +54,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 sessionClaims.username,
                 filter,
                 emptyMap(),
-                false
+                false,
+                0
             ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
@@ -64,7 +65,8 @@ internal class ContactListStateTest : BaseStateTest() {
                     'V' to listOf(contact1),
                     'P' to listOf(contact2)
                 ),
-                false
+                false,
+                0
             ))
         }
     }
@@ -86,7 +88,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 sessionClaims.username,
                 filter,
                 emptyMap(),
-                false
+                false,
+                0
             ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
@@ -95,7 +98,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 mapOf(
                     'V' to listOf(contact1)
                 ),
-                false
+                false,
+                0
             ))
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
@@ -103,7 +107,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 mapOf(
                     'P' to listOf(contact2)
                 ),
-                false
+                false,
+                0
             ))
         }
     }
@@ -126,7 +131,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 sessionClaims.username,
                 filter,
                 emptyMap(),
-                false
+                false,
+                0
             ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
@@ -135,7 +141,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 mapOf(
                     'V' to listOf(contact1)
                 ),
-                false
+                false,
+                0
             ))
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
@@ -143,7 +150,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 mapOf(
                     'V' to listOf(contact1)
                 ),
-                false
+                false,
+                0
             ))
             db.listContacts(U_NAME, filter2)
             stateMachine.setUiState(UiState.ContactList(
@@ -152,7 +160,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 mapOf(
                     'P' to listOf(contact2)
                 ),
-                false
+                false,
+                0
             ))
         }
     }
@@ -174,7 +183,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 sessionClaims.username,
                 filter,
                 emptyMap(),
-                false
+                false,
+                0
             ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
@@ -184,7 +194,8 @@ internal class ContactListStateTest : BaseStateTest() {
                     'V' to listOf(contact1),
                     'P' to listOf(contact2)
                 ),
-                false
+                false,
+                0
             ))
             stateMachine.setUiState(UiState.ContactList(
                 sessionClaims.username,
@@ -193,7 +204,8 @@ internal class ContactListStateTest : BaseStateTest() {
                     'V' to listOf(contact1),
                     'P' to listOf(contact2)
                 ),
-                true
+                true,
+                0
             ))
             loadContacts(sessionClaims)
             stateMachine.setUiState(UiState.ContactList(
@@ -203,7 +215,8 @@ internal class ContactListStateTest : BaseStateTest() {
                     'V' to listOf(contact1),
                     'P' to listOf(contact2)
                 ),
-                false
+                false,
+                0
             ))
         }
     }
@@ -222,7 +235,8 @@ internal class ContactListStateTest : BaseStateTest() {
                 sessionClaims.username,
                 filter,
                 emptyMap(),
-                false
+                false,
+                0
             ))
             db.listContacts(U_NAME, filter)
             stateMachine.setUiState(UiState.ContactList(
@@ -232,7 +246,8 @@ internal class ContactListStateTest : BaseStateTest() {
                     'V' to listOf(contact1),
                     'P' to listOf(contact2)
                 ),
-                false
+                false,
+                0
             ))
             factory.contactCard(
                 dataState.copy(

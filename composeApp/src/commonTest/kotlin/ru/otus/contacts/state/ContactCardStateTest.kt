@@ -23,7 +23,7 @@ internal class ContactCardStateTest : BaseStateTest() {
     private val dataState = ContactsDataState(
         sessionClaims,
         filter,
-        mapOf(
+        contacts = mapOf(
             'V' to listOf(contact1),
             'P' to listOf(contact2)
         )

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
@@ -31,6 +32,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -42,6 +44,7 @@ import contacts.composeapp.generated.resources.Res
 import contacts.composeapp.generated.resources.btn_refresh_content
 import contacts.composeapp.generated.resources.contacts
 import contacts.composeapp.generated.resources.input_filter
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import ru.otus.contacts.data.Contact
@@ -64,6 +67,14 @@ fun ContactList(state: UiState.ContactList, onGesture: (UiGesture) -> Unit) {
                     )
                 )
             }
+        }
+    }
+
+    // Saving scroll position between Master/Details navigation
+    val scrollState = rememberLazyListState(state.firstVisibleItemIndex)
+    LaunchedEffect(Unit) {
+        snapshotFlow { scrollState.firstVisibleItemIndex }.collectLatest {
+            onGesture(UiGesture.Contacts.Scroll(it))
         }
     }
 
@@ -103,7 +114,7 @@ fun ContactList(state: UiState.ContactList, onGesture: (UiGesture) -> Unit) {
                     }
                 )
 
-                LazyColumn(Modifier.fillMaxSize()) {
+                LazyColumn(Modifier.fillMaxSize(), state = scrollState) {
                     state.contacts.forEach { (letter, contacts) ->
                         stickyHeader {
                             Box(Modifier
