@@ -8,7 +8,7 @@ import ru.otus.contacts.state.ContactsFactoryImpl
 class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
 
     private val model = Model(
-        ContactsFactoryImpl(getApplication<App>().dbProvider)
+        ContactsFactoryImpl(getApplication<ContactsApp>().dbProvider)
     )
 
     val uiState get() = model.uiState

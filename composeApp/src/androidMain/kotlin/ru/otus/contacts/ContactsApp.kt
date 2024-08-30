@@ -6,7 +6,7 @@ import io.github.aakira.napier.Napier
 import ru.otus.contacts.database.ContactsDbProvider
 import ru.otus.contacts.database.ContactsDbProviderImpl
 
-class App : Application() {
+class ContactsApp : Application() {
 
     val dbProvider: ContactsDbProvider by lazy {
         ContactsDbProviderImpl(this)

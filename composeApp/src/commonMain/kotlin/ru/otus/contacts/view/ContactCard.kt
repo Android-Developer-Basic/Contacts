@@ -2,6 +2,7 @@ package ru.otus.contacts.view
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,7 +38,7 @@ import ru.otus.contacts.data.UiGesture
 import ru.otus.contacts.data.UiState
 
 @Composable
-fun ContactCard(state: UiState.ContactCard, onGesture: (UiGesture) -> Unit) {
+fun ContactCard(state: UiState.ContactCard, communication: Communication, onGesture: (UiGesture) -> Unit) {
     val contact by remember(state.contact) { derivedStateOf { state.contact } }
 
     ScreenScaffold(
@@ -77,14 +78,18 @@ fun ContactCard(state: UiState.ContactCard, onGesture: (UiGesture) -> Unit) {
                                 Icons.Filled.Phone,
                                 stringResource(Res.string.phone_content),
                                 it
-                            )
+                            ) {
+                                communication.callPhone(it)
+                            }
                         }
                         contact.email?.let {
                             DataRow(
                                 Icons.Filled.Email,
                                 stringResource(Res.string.email_content),
                                 it
-                            )
+                            ) {
+                                communication.sendMail(it)
+                            }
                         }
                     }
                 }
@@ -94,9 +99,9 @@ fun ContactCard(state: UiState.ContactCard, onGesture: (UiGesture) -> Unit) {
 }
 
 @Composable
-private fun DataRow(icon: ImageVector, contentDescription: String, text: String) {
+private fun DataRow(icon: ImageVector, contentDescription: String, text: String, onClick: (String) -> Unit) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().clickable { onClick(text) },
         horizontalArrangement = Arrangement.spacedBy(24.dp, Alignment.Start),
         verticalAlignment = Alignment.CenterVertically
     ) {
