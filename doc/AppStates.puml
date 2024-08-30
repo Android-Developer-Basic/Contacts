@@ -1,0 +1,16 @@
+@startuml
+'https://plantuml.com/state-diagram
+
+[*] --> Login
+Login --> LoggingIn
+LoggingIn -> LoginError: Login error
+LoggingIn <- LoginError: Retry
+LoggingIn --> LoadingContacts: Login success
+LoadingContacts --> ContactList: When loaded
+LoadingContacts -> LoadingError: Load error
+LoadingContacts <- LoadingError: Retry
+ContactList -> ContactCard: On select
+ContactList <- ContactCard: On back
+ContactList --> [*]: On Back
+
+@enduml

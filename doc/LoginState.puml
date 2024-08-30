@@ -1,0 +1,36 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+
+autonumber
+
+actor User
+boundary View
+control StateMachine
+control LoginState
+control LoggingInState
+
+== Login entry ==
+User -> View: enter login
+View -> StateMachine: process(UserName(...))
+StateMachine -> LoginState: doUpdate(UserName(...))
+LoginState -> LoginState: update username
+StateMachine <- LoginState: setUiState(LoginForm(...))
+View <- StateMachine: emit(UserName(...))
+User <- View: update login field
+== Submit ==
+User -> View: == Submit ==
+View -> StateMachine: process(Action)
+StateMachine -> LoginState: doUpdate(Action)
+LoginState -> LoginState: validate form
+create LoggingInState
+note across: Create and switch to the next state
+LoginState -> LoggingInState: create(credentials)
+LoginState -> StateMachine: setMachineState(LoggingInState)
+StateMachine -> LogginState: doClear()
+StateMachine -> LoggingInState: onStart()
+StateMachine <- LoggingInState: setUiState(Loading)
+View <- StateMachine: emit(Loading)
+User <- View: change screen to Loading
+
+
+@enduml

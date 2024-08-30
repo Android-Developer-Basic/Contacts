@@ -1,0 +1,37 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+hide empty members
+
+class "Compose View" as View
+
+View -> StateMachine: gestures
+View <- StateMachine: uiState
+
+class StateMachine {
+    +uiState: StateFlow<UiState>
+    +onGesture(gesture: UiGesture)
+    --
+    +setUiState(state: UiState)
+    +setMachineState(state: MachineState)
+}
+
+StateMachine "1" *-- "1" MachineState
+
+abstract class MachineState {
+    #onStart()
+    +setUiState(state: UiState)
+    +setMachineState(state: UiState)
+}
+
+class Login
+class LoggingIn
+class Error
+class LoadingContacts
+
+MachineState <|-- Login
+MachineState <|-- LoggingIn
+MachineState <|-- Error
+MachineState <|-- LoadingContacts
+
+@enduml
