@@ -9,6 +9,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import ru.otus.contacts.data.UiState
+import ru.otus.contacts.view.AndroidCommunication
+import ru.otus.contacts.view.Communication
 
 
 class MainActivity : ComponentActivity() {
@@ -22,6 +24,7 @@ class MainActivity : ComponentActivity() {
             val state by viewModel.uiState.collectAsState()
             App(
                 state = state,
+                communication = AndroidCommunication(this),
                 onComplete = { finish() },
                 onGesture = { viewModel.onGesture(it) }
             )
@@ -34,6 +37,15 @@ class MainActivity : ComponentActivity() {
 fun AppAndroidPreview() {
     App(
         state = UiState.LoginForm("user", "password", true),
+        communication = object : Communication {
+            override fun sendMail(address: String) {
+                // NO-OP
+            }
+
+            override fun callPhone(phone: String) {
+                // NO-OP
+            }
+        },
         onComplete = {},
         onGesture = {}
     )

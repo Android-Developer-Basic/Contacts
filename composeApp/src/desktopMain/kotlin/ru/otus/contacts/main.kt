@@ -7,6 +7,7 @@ import androidx.compose.ui.window.application
 import io.github.aakira.napier.Napier
 import ru.otus.contacts.database.ContactsDbProviderImpl
 import ru.otus.contacts.state.ContactsFactoryImpl
+import ru.otus.contacts.view.DesktopCommunication
 
 fun main() = application {
     Napier.d { "Desktop app start" }
@@ -22,6 +23,7 @@ fun main() = application {
         val viewState by viewModel.uiState.collectAsState()
         App(
             state = viewState,
+            communication = DesktopCommunication,
             onComplete = { exitApplication() },
             onGesture = { viewModel.onGesture(it) }
         )
